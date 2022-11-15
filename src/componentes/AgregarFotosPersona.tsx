@@ -15,7 +15,9 @@ const AgregarFotosPersona = () => {
             setOpen(false);
         }} open={open}>
             <div className="flex w-full gap-4 pt-10">
+
                 <Webcam />
+
                 <div className="w-80">
                     {fotos.data ? fotos?.data?.map((foto, index) => {
                         return (<>
