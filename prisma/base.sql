@@ -1,0 +1,2 @@
+INSERT INTO public."Personas"(id, nombre, apellido_p, apellido_m, carnet) VALUES (1, 'Andrés', 'Carrillo', 'Zelada', '9089124');
+INSERT INTO public."User" (id, usuario, password, rol, persona_id) VALUES (1, 'link', '$2a$10$Q6NJjQIZy3o2FDQQ5HIt2Ok1Yx625yb.3dT5ARoJ0diE8PGQ3VIEG', 'ADMIN', 1);
