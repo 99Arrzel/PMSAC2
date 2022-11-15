@@ -18,11 +18,13 @@ export const authOptions: NextAuthOptions = {
     jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.user = user;
       }
-      console.log("jwttrah", token);
       return token;
     },
     session({ session, token }) {
+      console.log("sessiontrah", session)
+      console.log("tokentrah", token)
       session.data = { ...token };
       return session;
     }
@@ -52,12 +54,14 @@ export const authOptions: NextAuthOptions = {
             usuario: credentials?.username
           },
           include: {
-            persona: true,
+            persona: true
           }
+
         });
         if (user) {
           const isValid = await bcrypt.compare(credentials?.password as string, user.password as string);
           if (isValid) {
+
             return user;
           }
         }

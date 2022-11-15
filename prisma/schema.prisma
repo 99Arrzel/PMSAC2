@@ -22,26 +22,27 @@ model Registros {
   fecha      DateTime @default(now())
   persona_id Int
   persona    Personas @relation(fields: [persona_id], references: [id], name: "registros_persona")
+  camara_id  String
+  camara     User     @relation(fields: [camara_id], references: [id])
   foto_url   String
 }
 
 //Necesitamos a personas
 model Personas {
-  id         Int         @id @default(autoincrement())
-  nombre     String
-  apellido_p String
-  apellido_m String
-  carnet     String
-  edad       Int?
-  email      String?
-  telefono   String?
-  direccion  String?
-  Usuarios   User[]      @relation(name: "persona_usuario")
-  Registros  Registros[] @relation(name: "registros_persona")
-  created_at DateTime    @default(now())
-  updated_at DateTime    @default(now())
-  deleted_at DateTime? //Cuando lo querramos dar de baja.
-  Fotos      Fotos[]
+  id               Int         @id @default(autoincrement())
+  nombre           String
+  apellido_p       String
+  apellido_m       String
+  carnet           String      @unique //No podes repetir carnets
+  fecha_nacimiento DateTime?
+  telefono         String?
+  direccion        String?
+  Usuarios         User[]      @relation(name: "persona_usuario")
+  Registros        Registros[] @relation(name: "registros_persona")
+  created_at       DateTime    @default(now())
+  updated_at       DateTime    @default(now())
+  deleted_at       DateTime? //Cuando lo querramos dar de baja.
+  Fotos            Fotos[]
 }
 
 enum Roles {
@@ -78,19 +79,21 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String      @id @default(cuid())
   name          String?
-  email         String?   @unique
+  email         String?     @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
   sessions      Session[]
-  usuario       String?   @unique
+  usuario       String?     @unique
   password      String? // Puede que no lo necesite si logea con OAuth
-  rol           Roles     @default(USUARIO)
+  rol           Roles       @default(USUARIO)
   persona_id    Int?
-  persona       Personas? @relation(fields: [persona_id], references: [id], name: "persona_usuario")
+  persona       Personas?   @relation(fields: [persona_id], references: [id], name: "persona_usuario")
   foto_url      String?
+  deleted_at    DateTime? //Cuando lo querramos dar de baja.
+  Registros     Registros[]
 }
 
 model VerificationToken {

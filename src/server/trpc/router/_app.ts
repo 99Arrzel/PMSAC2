@@ -1,9 +1,15 @@
+import { registrosRouter } from './registros';
+import { personasRouter } from './personas';
 import { router } from "../trpc";
 import { authRouter } from "./auth";
-import { exampleRouter } from "./example";
+import { fotosRouter } from "./fotos";
+import { usuariosRouter } from "./usuarios";
 
 export const appRouter = router({
-  example: exampleRouter,
+  fotos: fotosRouter,
+  personas: personasRouter,
+  usuarios: usuariosRouter,
+  registros: registrosRouter,
   auth: authRouter,
 });
 

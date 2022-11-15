@@ -1,7 +1,8 @@
 import { getSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { getServerSideProps } from "../pages/dashboard";
 
 export function slashRemover(path: string) {
     /* Obtenemos el último */
@@ -12,12 +13,19 @@ export function slashRemover(path: string) {
 }
 
 const Topbar = () => {
-    const session = getSession();
+
     const router = useRouter();
     console.log(slashRemover(router.asPath), "ruta");
-    console.log(session, "token");
+    const [userData, setUserData] = useState<any>(null);
+    useEffect(() => {
+        getSession().then((data) => {
+            console.log(data)
+            setUserData(data);
+        });
+    }, []);
+
     return (
-        <div className="flex bg-red-400 " >
+        <div className="flex bg-red-400 flex-wrap" >
             <div className="flex gap-2 mr-auto text-white">
                 <Link href="/dashboard">
                     <button className={`bg-red-600 py-4 px-6 hover:bg-red-300 ${slashRemover(router.asPath) == "dashboard" ? "bg-red-800" : ""}`}>
@@ -35,7 +43,18 @@ const Topbar = () => {
                     </button>
                 </Link>
             </div>
-            <div className="ml-auto">
+            <div className="ml-auto flex gap-2">
+                <div>
+                    {userData ?
+
+                        <div className="flex align-center py-2 gap-2">
+                            <img className="w-10 h-10 rounded-full" src
+                                ={userData.data?.image ?? "/default_user.png"} />
+                            <p className="text-white self-center">Bienvenido {userData.data?.user.persona.nombre}</p>
+                        </div>
+                        : <p className="text-white">Cargando...</p>}
+
+                </div>
                 <button className="py-4 px-6 hover:bg-red-800 bg-red-600 text-white"
                     onClick={() => {
                         console.log("wtf")
