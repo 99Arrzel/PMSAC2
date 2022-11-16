@@ -74,11 +74,12 @@ const EditarPersona = () => {
                         }
 
                     }></input>
-                    <input className="border" type="date" placeholder="Fecha de nacimiento" value={typeof fecha_nacimiento === 'function' ? fecha_nacimiento.toLocaleDateString('en-CA') : undefined} onChange={
-                        (e) => {
-                            setFecha_nacimiento(new Date(e.target.value));
-                        }
-                    } ></input>
+                    <input className="border" type="date" placeholder="Fecha de nacimiento" value={
+                        fecha_nacimiento ? fecha_nacimiento.toLocaleDateString('en-CA') : undefined} onChange={
+                            (e) => {
+                                setFecha_nacimiento(new Date(e.target.value));
+                            }
+                        } ></input>
                     <input className="border" placeholder="Telefono" value={telefono ?? ""} onChange={
                         (e) => {
                             setTelefono(e.target.value);
