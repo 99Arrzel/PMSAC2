@@ -75,7 +75,7 @@ const EditarPersona = () => {
 
                     }></input>
                     <input className="border" type="date" placeholder="Fecha de nacimiento" value={
-                        fecha_nacimiento ? fecha_nacimiento.toLocaleDateString('en-CA') : undefined} onChange={
+                        (fecha_nacimiento && fecha_nacimiento.toLocaleDateString) ? fecha_nacimiento.toLocaleDateString('en-CA') : undefined} onChange={
                             (e) => {
                                 setFecha_nacimiento(new Date(e.target.value));
                             }

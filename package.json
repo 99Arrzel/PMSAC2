@@ -18,7 +18,10 @@
     "@trpc/react-query": "10.0.0-rc.4",
     "@trpc/server": "10.0.0-rc.4",
     "@types/bcryptjs": "^2.4.2",
+    "@types/formidable": "^2.0.5",
+    "@types/uuid": "^8.3.4",
     "bcryptjs": "^2.4.3",
+    "formidable": "^2.0.1",
     "next": "13.0.2",
     "next-auth": "^4.15.1",
     "notiflix": "^3.2.5",
@@ -26,6 +29,7 @@
     "react-dom": "18.2.0",
     "react-webcam": "^7.0.1",
     "superjson": "1.9.1",
+    "uuid": "^9.0.0",
     "zod": "^3.18.0",
     "zustand": "^4.1.4"
   },
