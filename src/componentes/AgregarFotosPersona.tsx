@@ -10,12 +10,12 @@ const AgregarFotosPersona = () => {
     const [open, setOpen] = useState<boolean>(false);
 
     /* Datos de la webcam */
-    const webcamRef = useRef(null);
+    const webcamRef = useRef<Webcam>(null);
     const uploadToServer = async () => {
         if (!webcamRef.current) return;
         console.log("intentando enviar")
         const body = new FormData();
-        body.append("file", webcamRef?.current?.getScreenshot());
+        body.append("file", webcamRef.current.getScreenshot() ?? ""); //No file, lo validamos con onUserMedia
         body.append("persona_id", id.toString());
         const response = await fetch("/api/images/upload", {
             method: "POST",
