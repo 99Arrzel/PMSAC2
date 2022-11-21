@@ -6,8 +6,29 @@ import EditarPersona from "../../componentes/EditarPersona";
 import { esquemaPersonasType, TablaPersonas } from "../../componentes/Tabla";
 import Topbar from "../../componentes/Topbar";
 import { trpc } from "../../utils/trpc";
+import { InferGetServerSidePropsType } from "next";
+import { getToken } from "next-auth/jwt";
 
-const Personas = (props: any) => {
+export async function getServerSideProps(context: any) {
+    /* Sessión de nextauth con jwt */
+    const session = await getToken({ req: context.req, secret: process.env.NEXTAUTH_SECRET });
+    console.log(session, "token");
+    if (!session) {
+        return {
+            redirect: {
+                destination: "/login",
+                permanent: false,
+            },
+        };
+    }
+    return {
+        props: {
+        },
+    };
+}
+
+
+const Personas = (props: InferGetServerSidePropsType<typeof getServerSideProps>) => {
     const [buscar, setBuscar] = useState<string>("");
     const personas = trpc.personas.listarPersonas.useQuery({ like: buscar });
     const [esquemaData, setEsquemaData] = useState<esquemaPersonasType>([]);

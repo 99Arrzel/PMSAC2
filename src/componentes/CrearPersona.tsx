@@ -48,7 +48,11 @@ const CrearPersona = () => {
             <button className="bg-green-400 px-2 py-1 hover:bg-green-500" onClick={() => {
                 setOpen(true);
             }}>Registrar</button>
-            <Modal onClose={() => {
+            <Modal
+                titulo={
+                    <h1 className="text-2xl">Registrar persona</h1>
+                }
+                onClose={() => {
                 setOpen(false);
             }} open={open}>
                 <div className="flex flex-col gap-4 p-4">

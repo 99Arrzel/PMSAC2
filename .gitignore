@@ -6,6 +6,7 @@
 .pnp.js
 
 /public/imagenes
+/public/asistencia
 # testing
 /coverage
 

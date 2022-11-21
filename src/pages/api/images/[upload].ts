@@ -3,7 +3,15 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import formidable from "formidable";
 import fs from "fs";
 import { v4 as uuidv4 } from 'uuid';
-
+/* Comprefaces lo basico */
+import { CompreFace } from '@exadel/compreface-js-sdk';
+const api_key = "ea34982f-d453-4364-b906-30bd06b55475";
+const url = "http://localhost";
+const port = 8000;
+const compreFace = new CompreFace(url, port); // set CompreFace url and port 
+const recognitionService = compreFace.initFaceRecognitionService(api_key); // initialize service
+const faceCollection = recognitionService.getFaceCollection(); // use face collection to fill it with known faces
+/* ============ */
 export const config = {
     api: {
         bodyParser: false
@@ -28,23 +36,36 @@ const saveFile = async (file: any, id: number) => {
         console.log("imagen guardada");
         /* Ahora si, si todo bien, guardamos en la db */
         const prisma = new PrismaClient();
-        const newImage = await prisma.fotos.create({
+        const foto = await prisma.fotos.create({
             data: {
                 foto_url: path,
-                persona_id: id
+                persona: {
+                    connect: {
+                        id: Number(id)
+                    }
+                }
             }
         });
-
+        /* Finalmente guardamos el rostro en comprefaces */
+        const compreFaceImage = await faceCollection.add(path, id.toString()) as { image_id: string; subject: string; };
+        await prisma.fotos.update({
+            where: {
+                id: foto.id
+            },
+            data: {
+                compreface_id: compreFaceImage.image_id
+            }
+        });
     }
     catch (err) {
-        console.log(err);
+        throw new Error("Error al guardar la imagen");
     }
 };
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     try {
-        console.log("intentando...")
-        await post(req, res);
-        return res.status(201).send("");
+        await post(req, res).then(() => {
+            return res.status(201).send("");
+        });
     } catch (err) {
         return res.status(500).json({ response: 'NOTOK' })
     }

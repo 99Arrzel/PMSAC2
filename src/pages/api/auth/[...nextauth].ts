@@ -23,8 +23,7 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     session({ session, token }) {
-      console.log("sessiontrah", session)
-      console.log("tokentrah", token)
+
       session.data = { ...token };
       return session;
     }

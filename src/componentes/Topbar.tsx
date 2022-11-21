@@ -26,7 +26,7 @@ const Topbar = () => {
 
     return (
         <div className="flex bg-red-400 flex-wrap" >
-            <div className="flex gap-2 mr-auto text-white">
+            <div className="flex gap-2 mr-auto text-white flex-wrap justify-around">
                 <Link href="/dashboard">
                     <button className={`bg-red-600 py-4 px-6 hover:bg-red-300 ${slashRemover(router.asPath) == "dashboard" ? "bg-red-800" : ""}`}>
                         Ultimos
@@ -40,6 +40,11 @@ const Topbar = () => {
                 <Link href="/dashboard/personas">
                     <button className={`bg-red-600 py-4 px-6 hover:bg-red-300 ${slashRemover(router.asPath) == "personas" ? "bg-red-800" : ""}`}>
                         Personas
+                    </button>
+                </Link>
+                <Link href="/dashboard/camara">
+                    <button className={`bg-red-600 py-4 px-6 hover:bg-red-300 ${slashRemover(router.asPath) == "camara" ? "bg-red-800" : ""}`}>
+                        Camara
                     </button>
                 </Link>
             </div>

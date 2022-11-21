@@ -1,27 +1,113 @@
 import { Prisma } from "@prisma/client";
 import { z } from "zod";
-
+import { v4 as uuidv4 } from 'uuid';
 import { router, protectedProcedure } from "../trpc";
+import fs from "fs";
+/* Comprefaces lo basico */
+import { CompreFace, Options } from '@exadel/compreface-js-sdk';
+import { env } from "process";
+const api_key = "ea34982f-d453-4364-b906-30bd06b55475";
+const url = "http://localhost";
+const port = 8000;
+const compreFace = new CompreFace(url, port); // set CompreFace url and port 
+const recognitionService = compreFace.initFaceRecognitionService(api_key); // initialize service
+const options: Options = {
+    limit: 1,
+    det_prob_threshold: 0.5,
+    prediction_count: 1,
+    //status: true
+}
+type recognitionResponse = {
+    subject: string;
+    similarity: number;
+};
+type recognitionBox = {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+}
+type recognitionResult = {
+    box: recognitionBox;
+    subjects: recognitionResponse[];
+}
+
+type responseApiRecognition = {
+    /* Result array */
+    result: recognitionResult[];
+
+}
+
 
 export const registrosRouter = router({
     nuevoRegistro: protectedProcedure.input(
         z.object({
-            persona_id: z.number(),
-            foto_url: z.string()
+            foto: z.string(), // base64
+            camara_id: z.number(), //Esto no debería hacerse, sabes, deberiamos inferirlo desde ctx, pero ok
         })
-    ).query(({ input, ctx }) => {
-        const nuevo = ctx.prisma.registros.create({
-            data: {
-                fecha: new Date(),
-                persona_id: input.persona_id,
-                camara_id: "1",
-                foto_url: input.foto_url
+    ).mutation(async ({ input, ctx }) => {
+        const path = `./public/asistencia/${uuidv4()}.jpg`;
+        try {
+            /* Guardamos la imagen */
+            const data = input.foto.replace(/^data:image\/\w+;base64,/, "");
+
+            fs.writeFileSync(path, data, 'base64');
+            /* Ahora lo comprobamos en compreface */
+            /* const b64toBlob = (base64: string) =>
+                fetch(`${base64}`).then(res => res.blob())
+            const blob = await b64toBlob(input.foto);
+            const text = await blob.text(); */
+            const url = env.NEXTAUTH_URL + path.replace("./public", "");
+            const reconocer = await recognitionService.recognize(path, options).catch((err) => {
+                console.log(err);
+                return { message: "No se pudo crear el registro", exito: false };
+            }) as responseApiRecognition;
+            const respuesta = reconocer.result[0]?.subjects[0] ?? null;
+
+            if (respuesta?.subject && respuesta.similarity > 0.8) {
+                /* Si existe el subject, entonces creamos el registro */
+                console.log("xd")
+                const nuevoRegistro = await ctx.prisma.registros.create({
+                    data: {
+                        fecha: new Date(new Date().getTime() - 4 * 60 * 60 * 1000), //Gmt -4
+                        persona_id: Number(respuesta.subject),
+                        camara_id: input.camara_id.toString(),
+                        foto_url: path,
+                    }
+                });
+
+                if (!nuevoRegistro) {
+                    throw new Error("No se pudo crear el registro");
+                }
+                /* Query de la persona  */
+                const persona = await ctx.prisma.personas.findUnique({
+                    where: {
+                        id: Number(respuesta.subject)
+                    },
+                });
+                return { message: "Registro creado con éxito", exito: true, persona, similaridad: respuesta.similarity };
             }
-        });
-        if (!nuevo) {
-            throw new Error("No se pudo crear el registro");
+            /* si no hay respuesta, borrramos la foto */
+            fs.unlink(path, (err) => {
+                if (err) {
+                    throw new Error("No se pudo eliminar la foto: " + err);
+                }
+            });
+            /* y retornamos no encontrado */
+            return { message: "Rostro desconocido", exito: false };
+        } catch (error) {
+            console.log(error);
+            /* eliminamos la foto */
+            fs.unlink(path, (err) => {
+                if (err) {
+                    throw new Error("No se pudo eliminar la foto: " + err);
+
+                }
+            });
+            return { message: "No se pudo crear el registro", exito: false };
+
+
         }
-        return "Registro creado con éxito";
     }),
     eliminarRegistro: protectedProcedure.input(
         z.object({

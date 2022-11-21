@@ -47,13 +47,18 @@ const EditarPersona = () => {
                 }}
             >Editar</button>
             <Modal
+                titulo={
+                    <>
+                        <h1 className="text-2xl">Registrar persona</h1>
+                    </>
+                }
                 onClose={() => {
                     setOpen(false);
                 }}
                 open={open}
             >
                 <div className="flex flex-col gap-4 p-4">
-                    <p className="text-center text-xl">Editar una persona</p>
+
                     <input className="border" placeholder="Nombre" value={nombre} onChange={(e) => {
                         setNombre(e.target.value);
                     }}></input>
