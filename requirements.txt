@@ -1,0 +1,5 @@
+pip install python-socketio
+pip install gunicorn
+pip install gevent-websocket
+pip install eventlet
+se inicia con gunicorn -w 1 -b 0.0.0.0:3001 -k eventlet
