@@ -5,7 +5,7 @@ const esquemaUltimos = zod.object({
   nombre: zod.string(),
   apellido: zod.string(),
   carnet: zod.string(),
-  foto: zod.string(),
+
   foto_ultimo_ingreso: zod.string(),
   hora_ultimo_ingreso: zod.string(),
 }).array();
@@ -33,9 +33,8 @@ const TablaUltimos = ({ datos }: { datos: z.infer<typeof esquemaUltimos> }) => {
             <tr>
               <th className="px-4 py-2">Nombre</th>
               <th className="px-4 py-2">Apellido</th>
-              <th className="px-4 py-2">Puesto</th>
+
               <th className="px-4 py-2">Carnet</th>
-              <th className="px-4 py-2">Foto</th>
               <th className="px-4 py-2">Foto Ultimo Ingreso</th>
               <th className="px-4 py-2">Hora Ultimo Ingreso</th>
             </tr>
@@ -47,11 +46,8 @@ const TablaUltimos = ({ datos }: { datos: z.infer<typeof esquemaUltimos> }) => {
                 <td className="border px-4 py-2">{dato.nombre}</td>
                 <td className="border px-4 py-2">{dato.apellido}</td>
                 <td className="border px-4 py-2">{dato.carnet}</td>
-                <td className="border px-4 py-2">
-                  <img src={dato.foto} />
-                </td>
-                <td className="border px-4 py-2">
-                  <img src={dato.foto_ultimo_ingreso} />
+                <td className="border py-2 mx-auto">
+                  <img src={dato.foto_ultimo_ingreso} className="h-40 w-40 object-cover" />
                 </td>
                 <td className="border px-4 py-2">{dato.hora_ultimo_ingreso}</td>
               </tr>
