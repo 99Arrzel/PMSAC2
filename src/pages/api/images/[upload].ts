@@ -5,10 +5,13 @@ import fs from "fs";
 import { v4 as uuidv4 } from "uuid";
 /* Comprefaces lo basico */
 import { CompreFace } from "@exadel/compreface-js-sdk";
-const api_key = "5b47959a-b908-4ba7-8aa1-b74d10ba2127"; //Laptop
-//const api_key = "ea34982f-d453-4364-b906-30bd06b55475"; //pc
-const url = "http://localhost";
+import { env } from "../../../env/server.mjs";
+
+
+const url = env.COMPREFACE_URL
+const api_key = env.COMPREFACE_API_KEY
 const port = 8000;
+console.log(url, api_key, port)
 const compreFace = new CompreFace(url, port); // set CompreFace url and port
 const recognitionService = compreFace.initFaceRecognitionService(api_key); // initialize service
 const faceCollection = recognitionService.getFaceCollection(); // use face collection to fill it with known faces

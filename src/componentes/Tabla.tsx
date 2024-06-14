@@ -1,11 +1,12 @@
-import zod, { z } from "zod";
+import type { z } from "zod";
+import zod from "zod";
 import { useDatosPersona } from "./ZustandStates/DatosPersona";
 /* Esquema de zod que tenga */
 const esquemaUltimos = zod.object({
   nombre: zod.string(),
   apellido: zod.string(),
   carnet: zod.string(),
-
+  id: zod.number(),
   foto_ultimo_ingreso: zod.string(),
   hora_ultimo_ingreso: zod.string(),
 }).array();
@@ -42,7 +43,7 @@ const TablaUltimos = ({ datos }: { datos: z.infer<typeof esquemaUltimos> }) => {
           <tbody>
             {isEmpty(datos, 7)}
             {datos.map((dato) => (
-              <tr key={dato.carnet} className="even:bg-gray-200 bg-red-300">
+              <tr key={dato.id} className="even:bg-gray-200 bg-red-300">
                 <td className="border px-4 py-2">{dato.nombre}</td>
                 <td className="border px-4 py-2">{dato.apellido}</td>
                 <td className="border px-4 py-2">{dato.carnet}</td>

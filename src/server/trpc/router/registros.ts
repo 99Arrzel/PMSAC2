@@ -7,10 +7,11 @@ import fs from "fs";
 /* Comprefaces lo basico */
 import { CompreFace } from "@exadel/compreface-js-sdk";
 import type { Options } from "@exadel/compreface-js-sdk";
+import { env } from "../../../env/server.mjs";
 
-const api_key = "5b47959a-b908-4ba7-8aa1-b74d10ba2127"; //Laptop
+const api_key = env.COMPREFACE_API_KEY
 //const api_key = "ea34982f-d453-4364-b906-30bd06b55475"; //pc
-const url = "http://localhost";
+const url = env.COMPREFACE_URL
 const port = 8000;
 const compreFace = new CompreFace(url, port); // set CompreFace url and port
 const recognitionService = compreFace.initFaceRecognitionService(api_key); // initialize service
@@ -50,7 +51,7 @@ export const registrosRouter = router({
     .input(
       z.object({
         foto: z.string(), // base64
-        camara_id: z.number(), //Esto no debería hacerse, sabes, deberiamos inferirlo desde ctx, pero ok
+        camara_id: z.string(), //en realidad esto es el id de un usuario con permiso camara
       }),
     )
     .mutation(async ({ input, ctx }) => {
@@ -61,9 +62,12 @@ export const registrosRouter = router({
 
         const reconocer = (await recognitionService
           .recognize(data, options)
-          .catch(() => {
+          .catch((e) => {
+            console.error(e);
             return { message: "No se pudo crear el registro", exito: false };
           })) as responseApiRecognition;
+        
+        console.log(reconocer, "Esto es el resultado de reconocer")
         const respuesta = reconocer.result[0]?.subjects[0] ?? null;
         if (
           respuesta?.subject === ultimoRegistro &&
@@ -116,6 +120,7 @@ export const registrosRouter = router({
         /* y retornamos no encontrado */
         return { message: "Rostro desconocido", exito: false };
       } catch (error) {
+        console.error(error)
         return { message: "No se pudo crear el registro", exito: false };
       }
     }),
@@ -142,7 +147,7 @@ export const registrosRouter = router({
       z.object({
         cursor: z.string().nullish(),
         search: z.string().nullish(),
-        take: z.number().min(1).max(50).nullish(),
+        take: z.number().min(1).max(100).nullish(),
         antes: z.date().nullish(),
         despues: z.date().nullish(),
       }),

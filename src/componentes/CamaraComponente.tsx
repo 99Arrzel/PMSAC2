@@ -4,36 +4,26 @@ import Webcam from "react-webcam";
 import * as faceApi from "face-api.js";
 import { trpc } from "../utils/trpc";
 import { getSession } from "next-auth/react";
-import io from "socket.io-client";
 
-const socket = io("http://localhost:3001");
+
+
 const CamaraComponente = () => {
   /* Marcar asistencia */
   let session: any;
   const marcarAsistencia = trpc.registros.nuevoRegistro.useMutation();
-
   const loadModels = async () => {
     /* Tinyface es más ligero qe SSDMobileNet, por lo que usaremos ese (Aunque es más malo) */
     //await faceApi.nets.ssdMobilenetv1.load("/models/");
     await faceApi.nets.tinyFaceDetector.load("/models/");
     console.log("epico");
   };
-  const socketInitializer = async () => {
-    console.log("intentando conectar");
-    socket.on("connect", () => {
-      console.log("conectado");
-    });
-    socket.on("seq-num", (sequence) => {
-      console.log("seq-num", sequence);
-    });
-    console.log("intentando conectar2");
-  };
+  
   useEffect(() => {
     loadModels();
     getSession().then((data) => {
       session = data;
     });
-    socketInitializer();
+    //socketInitializer();
   }, []);
 
   const webcamRef = useRef<Webcam>(null);
@@ -101,13 +91,16 @@ const CamaraComponente = () => {
       /* Ahora intentamos marcar asistencia */
 
       /* Marcar asistencia */
+      if (!session.data.id) {
+        return 
+      }
+      console.log(session.data.id)
       const mAsistencia = await marcarAsistencia.mutateAsync({
         foto: webcamRef.current?.getScreenshot() ?? "",
-        camara_id: Number(session.data.id),
+        camara_id: session.data.id,
       });
 
       if (mAsistencia.exito && mAsistencia.similaridad) {
-        console.log("xd");
         setDatoLoggin(
           `Bienvenido ${
             mAsistencia.persona?.nombre ?? ""
@@ -124,10 +117,7 @@ const CamaraComponente = () => {
         /* Finalmente un timeout para volverlo a la normalidad
          */
 
-        socket.emit("detection", {
-          id: session.data.id,
-          nombre: mAsistencia.persona?.nombre ?? "",
-        });
+        
       } else {
         setLoggedIn(false);
         setDatoLoggin(mAsistencia.message);
@@ -148,9 +138,19 @@ const CamaraComponente = () => {
       6
     );
   }, []);
+
+  // Get relation aspect ratio from actual video
+  const getAspectRatio = () => {
+    if (!webcamRef.current) return
+    if (!webcamRef.current.video) return
+    return webcamRef.current.video.videoWidth / webcamRef.current.video.videoHeight;
+  };
+
+  
+
   return (
     <>
-      <div className="h-[320px] w-[480px]">
+      <div>
         <canvas ref={canvasCamera} height={320} width={480} className="fixed" />
         <Webcam
           ref={webcamRef}

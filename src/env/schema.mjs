@@ -21,6 +21,9 @@ export const serverSchema = z.object({
   ),
   DISCORD_CLIENT_ID: z.string(),
   DISCORD_CLIENT_SECRET: z.string(),
+
+  COMPREFACE_API_KEY: z.string(),
+  COMPREFACE_URL: z.string(),
 });
 
 /**
@@ -29,6 +32,7 @@ export const serverSchema = z.object({
  * To expose them to the client, prefix them with `NEXT_PUBLIC_`.
  */
 export const clientSchema = z.object({
+  
   // NEXT_PUBLIC_BAR: z.string(),
 });
 

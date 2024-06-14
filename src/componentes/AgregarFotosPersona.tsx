@@ -107,8 +107,8 @@ const AgregarFotosPersona = () => {
                 (
                     <div className="flex w-full gap-4 pt-4">
                         {/* Un canvas que cubra la imagen */}
-                        <canvas ref={canvasCamera} width={640} height={480} className="fixed">
-                        </canvas>
+                        <canvas ref={canvasCamera} width={640} height={480} className="fixed"/>
+                        
                         <Webcam ref={webcamRef} screenshotFormat="image/jpeg"
                             onUserMedia={onUserMedia}
                             onUserMediaError={() => {
@@ -121,6 +121,7 @@ const AgregarFotosPersona = () => {
                             }}
 
                         />
+                        
                         <div className="w-80 overflow-scroll h-[480px] flex flex-col gap-2">
                             {fotos.data ? fotos?.data?.map((foto, index) => {
                                 return (<>

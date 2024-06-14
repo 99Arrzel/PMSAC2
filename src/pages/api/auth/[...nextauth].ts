@@ -22,10 +22,10 @@ export const authOptions: NextAuthOptions = {
       }
       return token;
     },
-    session({ session, token }) {
-
-      session.data = { ...token };
-      return session;
+    session(props) {
+      console.log(props)
+      props.session.data = { ...props.token };
+      return props.session;
     }
   },
   // Configure one or more authentication providers
@@ -47,7 +47,7 @@ export const authOptions: NextAuthOptions = {
       },
 
       authorize: async (credentials) => { //Ignore error  
-
+        console.log("Auth start")
         const user = await prisma.user.findUnique({
           where: {
             usuario: credentials?.username
@@ -57,10 +57,13 @@ export const authOptions: NextAuthOptions = {
           }
 
         });
+        if(!user?.persona_id){
+          throw new Error('No se pudo iniciar sesión, sin persona.');
+        }
         if (user) {
+          
           const isValid = await bcrypt.compare(credentials?.password as string, user.password as string);
           if (isValid) {
-
             return user;
           }
         }

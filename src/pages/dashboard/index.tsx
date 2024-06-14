@@ -29,7 +29,7 @@ const Dashboard = (
 ) => {
   const [search, setSearch] = useState("");
   const ultimos = trpc.registros.listarRegistros.useQuery({
-    take: 10,
+    take: 100,
     search,
   });
   return (
@@ -40,11 +40,12 @@ const Dashboard = (
           <TablaUltimos
             datos={ultimos.data.registros.map((registro) => {
               return {
+                id: registro.id,
                 nombre: registro.persona.nombre,
                 apellido: registro.persona.apellido_p,
                 carnet: registro.persona.carnet,
                 foto_ultimo_ingreso: registro.foto_url.replace("./public", ""),
-                hora_ultimo_ingreso: registro.fecha.toLocaleString(),
+                hora_ultimo_ingreso: registro.fecha.toLocaleString("es-MX", {timeZone: "UTC"}),
               };
             })}
           />
